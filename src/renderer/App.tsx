@@ -1,50 +1,38 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
+import {useState}from 'react';
 import './App.css';
 
-const Hello = () => {
+function App() {
+    const [html , sethtml] = useState<string>(" "); 
+    const [mdt , setmdt] = useState<string>("");
+    
+    var showdown  = require('showdown');
+     let converter = new showdown.Converter();
+    function addtext(ntext:string){
+      setmdt(ntext);
+       sethtml(converter.makeHtml(ntext));
+    }
+    function savetext(){
+      var a = document.createElement("a");
+      let name = prompt("nombre del archivo")
+      if(name == "" || name == null){
+        alert("error: no puedes dejar el nombre del archivo vacio");
+      }
+      else{
+
+        a.href = window.URL.createObjectURL(new Blob([mdt], {type: "markdown"}));
+        a.download = name+".md";
+        a.click();
+      }
+    }
   return (
-    <div>
-      <div className="Hello">
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
+    <div className="App">
+     <textarea className='App__text' onChange={e=>{addtext(e.target.value)}}/>
+     <div className="App__div--markdowndisplay" dangerouslySetInnerHTML={{__html: html}}></div> 
+     <button className='App__button--save' onClick={()=>{savetext()}}>save md file</button>
+
     </div>
   );
-};
-
-export default function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Hello />} />
-      </Routes>
-    </Router>
-  );
 }
+
+export default App;
+
